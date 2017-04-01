@@ -47,6 +47,18 @@ void random_string(char* dest){
 }
 
 /*
+ * Copies the packet contents from a saved packet to a buffer.
+ * Also updates the send_time.
+ */
+void copy_packet(char* dest, cwnd_packet* packet){
+	bzero(dest, sizeof(dest));
+	dest[0] = (uint8_t) ((packet->seqnum >> 8) & 0xff);
+	dest[1] = (uint8_t) (packet->seqnum & 0xff);
+	strcpy(dest + 2, packet->data);
+	packet->send_time = (long long)time(0);
+}
+
+/*
  * Sets the first 2 bytes of the packet character array to 
  * a two byte (uint_16t) sequence number.  The next five bytes
  * are then set to a random sequence of characters.
@@ -91,7 +103,7 @@ uint16_t parse_packet(char* packet, char* dest){
  */
 void save_packet(char* packet, cwnd_packet* dest){
 	dest->seqnum = parse_packet(packet, dest->data);
-	dest->send_time = time(0);
+	dest->send_time = (long long)time(0);
 }
 
 /*

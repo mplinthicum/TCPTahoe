@@ -1,4 +1,4 @@
-#define SERV_PORT 2841
+#define SERV_PORT 2840
 #define MAXBUFF   8
 #define MSS		  5
 
@@ -9,7 +9,7 @@
  */
 typedef struct
 {
-	time_t send_time;
+	long long send_time;
 	int seqnum;
 	char data[6];
 } cwnd_packet;
@@ -28,6 +28,12 @@ int AddCongestion(double p);
  * The first 2 bytes hold the sequence number.
  */
 void random_string(char* dest);
+
+/*
+ * Copies the packet contents from a saved packet to a buffer.
+ * Also updates the send_time.
+ */
+void copy_packet(char* dest, cwnd_packet* packet);
 
 /*
  * Sets the first 2 bytes of the packet character array to 

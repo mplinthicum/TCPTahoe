@@ -37,26 +37,38 @@ int main(int argc, char **argv)
 	}
 	
 	int seqnum = 0;
+	int to_ack[32];
+	int i = 0, j = 0;
 	
 	while(1){
-	
-		/* Read from the server. */
-		bzero(buffrecv, sizeof(buffrecv));
-		if((read(fd, buffrecv, MAXBUFF)) < 0){
-			perror("RECEIVER socket read error");
-			exit(errno);
-		}
+
+		bzero(buffrecv, sizeof(buffrecv));	
+		while(recv(fd, buffrecv, 7, MSG_PEEK | MSG_DONTWAIT) > 0){
 		
-		/* Get the sequence number and text from the received packet. */
-		seqnum = parse_packet(buffrecv, packet_text);
-		make_ack(buffsend, seqnum);
+			/* Read from the server. */
+			bzero(buffrecv, sizeof(buffrecv));
+			if(recv(fd, buffrecv, MAXBUFF, 0) < 0){
+				perror("RECEIVER socket read error");
+				exit(errno);
+			}
+		
+			/* Get the sequence number and text from the received packet. */
+			seqnum = parse_packet(buffrecv, packet_text);
+			to_ack[i] = seqnum;
+			i++;
+		}
 			
 		/* Wait one second. */
 		sleep(1);
+			
+		for(j = 0; j < i; j++){
+			make_ack(buffsend, to_ack[j]);
 
-		if(write(fd, buffsend, sizeof(buffsend)) < 0){
-			perror("RECEIVER socket write error");
-			exit(errno);
+			if(write(fd, buffsend, sizeof(buffsend)) < 0){
+				perror("RECEIVER socket write error");
+				exit(errno);
+			}
 		}
+		i = 0;
 	}
 }
