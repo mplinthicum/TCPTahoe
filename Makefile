@@ -3,4 +3,4 @@ all:
 	gcc receiver.c helper.c -o receiver
 
 clean:
-	rm sender receiver
+	rm sender receiver cwnd_output.txt

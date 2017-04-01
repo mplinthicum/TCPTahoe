@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <fcntl.h>
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -47,12 +48,15 @@ int main(int argc, char **argv){
 		exit(errno);
 	}
 	
+	/* Initialize some variables. */
 	double cwnd = MSS, ssthresh = 16.0 * MSS;
-	int dupACKcount = 0;
-	int previous_seqnum = -5, seqnum = 0, received_seqnum = 0, max_seqnum = 0;
+	int dupACKcount = 0, previous_seqnum = -5, seqnum = 0, received_seqnum = 0, max_seqnum = 0;
 	int index = 0, i;
 	
 	cwnd_packet cwnd_packets[256];
+	
+	/* Set up the output file. */
+	int output_file = open("cwnd_output.txt", O_RDWR | O_CREAT, 0666);
 	
 	while(1){
 		
@@ -64,7 +68,8 @@ int main(int argc, char **argv){
 				long long diff = (long long)time(0) - cwnd_packets[i/MSS].send_time;
 				//printf("Checking timeout\t seqnum: %d\t data: %s\t diff: %lld\t received_seqnum: %d\n", cwnd_packets[i/MSS].seqnum, cwnd_packets[i/MSS].data, diff, received_seqnum);
 				if(diff >= 3L){
-					printf("TIMEOUT\t seqnum: 0x%x - %d\t data: %s\t diff: %lld\t received_seqnum: %d\n", cwnd_packets[i/MSS].seqnum, cwnd_packets[i/MSS].seqnum, cwnd_packets[i/MSS].data, diff, received_seqnum);
+					printf("TIMEOUT\t seqnum: 0x%x - %d\t data: %s\t", cwnd_packets[i/MSS].seqnum, cwnd_packets[i/MSS].seqnum, cwnd_packets[i/MSS].data);
+					printf("diff: %lld\t received_seqnum: %d\n", diff, received_seqnum);
 					cwnd = MSS;
 					index = 0;
 					max_seqnum = seqnum;
@@ -129,6 +134,9 @@ int main(int argc, char **argv){
 				}
 				
 				printf("cwnd: %0.2lf\n", cwnd / MSS);
+				
+				/* Write the cwnd value and system time to the file. */
+				write_to_file(output_file, cwnd / MSS, (long long)time(0));
 			}
 		}
 		

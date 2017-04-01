@@ -42,6 +42,7 @@ int main(int argc, char **argv)
 	
 	while(1){
 
+		/* Fill a list with acks for every packet in the queue. */
 		bzero(buffrecv, sizeof(buffrecv));	
 		while(recv(fd, buffrecv, 7, MSG_PEEK | MSG_DONTWAIT) > 0){
 		
@@ -60,7 +61,8 @@ int main(int argc, char **argv)
 			
 		/* Wait one second. */
 		sleep(1);
-			
+		
+		/* Send acks for every packet in the queue. */
 		for(j = 0; j < i; j++){
 			make_ack(buffsend, to_ack[j]);
 
@@ -69,6 +71,8 @@ int main(int argc, char **argv)
 				exit(errno);
 			}
 		}
+		
+		/* Reset the queue counter. */
 		i = 0;
 	}
 }

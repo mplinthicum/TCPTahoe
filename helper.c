@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <fcntl.h>
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -117,4 +118,20 @@ uint16_t parse_ack(char* packet){
 	lsb = packet[1];
 	
 	return (msb << 8) | lsb;
+}
+
+/*
+ * Fill a string with the cwnd lenght and current sytem time and
+ * write it formatted to a file.
+ */
+void write_to_file(int output_file, double cwnd, long long time){
+	char output_string[128], time_string[128];
+	
+	snprintf(output_string, sizeof(output_string), "%f", cwnd);
+	snprintf(time_string, sizeof(time_string), "%lld", time);
+	strcat(output_string, " ");
+	strcat(output_string, time_string);
+	strcat(output_string, "\n");
+	
+	write(output_file, output_string, strlen(output_string));
 }

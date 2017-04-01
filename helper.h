@@ -66,3 +66,9 @@ void save_packet(char* packet, cwnd_packet* dest);
  * to the parse_packet function.
  */
 uint16_t parse_ack(char* packet);
+
+/*
+ * Fill a string with the cwnd lenght and current sytem time and
+ * write it formatted to a file.
+ */
+void write_to_file(int output_file, double cwnd, long long time);
