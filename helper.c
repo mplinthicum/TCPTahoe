@@ -62,13 +62,20 @@ void copy_packet(char* dest, cwnd_packet* packet){
 /*
  * Sets the first 2 bytes of the packet character array to 
  * a two byte (uint_16t) sequence number.  The next five bytes
- * are then set to a random sequence of characters.
+ * are then set to characters from data.txt.
  */
-void make_packet(char* dest, uint16_t seqnum){
+void make_packet(char* dest, uint16_t seqnum, int data_fd){
+	
+	lseek(data_fd, seqnum, SEEK_SET);
+
 	bzero(dest, sizeof(dest));
 	dest[0] = (uint8_t) ((seqnum >> 8) & 0xff);
 	dest[1] = (uint8_t) (seqnum & 0xff);
-	random_string(dest);
+	
+	if(read(data_fd, dest + 2, 5) < 0){
+		perror("SENDER data read error");
+		exit(errno);
+	}
 }
 
 /*

@@ -36,9 +36,10 @@ int main(int argc, char **argv)
 		exit(errno);
 	}
 	
-	int seqnum = 0;
+	int seqnum = 0, previous_seqnum = -5;
 	int to_ack[32];
 	int i = 0, j = 0;
+	int dupACKcount = 0;
 	
 	while(1){
 
@@ -52,10 +53,20 @@ int main(int argc, char **argv)
 				perror("RECEIVER socket read error");
 				exit(errno);
 			}
-		
+			
+			
 			/* Get the sequence number and text from the received packet. */
-			seqnum = parse_packet(buffrecv, packet_text);
-			to_ack[i] = seqnum;
+			if(AddCongestion(0.1) != 1){
+				seqnum = parse_packet(buffrecv, packet_text);
+			}
+			
+			if(seqnum == (previous_seqnum + 5)){
+				to_ack[i] = seqnum;
+				previous_seqnum = seqnum;
+			} else {
+				to_ack[i] = previous_seqnum;
+			}
+			
 			i++;
 		}
 			

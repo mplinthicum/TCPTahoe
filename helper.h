@@ -15,7 +15,6 @@ typedef struct
 } cwnd_packet;
 
 
-
 /*
  * This routine is called with a probability of bit error, p, and
  * returns 1 if there is congestion, and 0 otherwise.
@@ -38,9 +37,9 @@ void copy_packet(char* dest, cwnd_packet* packet);
 /*
  * Sets the first 2 bytes of the packet character array to 
  * a two byte (uint_16t) sequence number.  The next five bytes
- * are then set to a random sequence of characters.
+ * are then set to characters from data.txt.
  */
-void make_packet(char* dest, uint16_t seqnum);
+void make_packet(char* dest, uint16_t seqnum, int data_fd);
 
 /*
  * Sets the first 2 bytes of the ACK to a two byte
