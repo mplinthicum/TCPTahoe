@@ -124,17 +124,18 @@ int main(int argc, char **argv){
 				dupACKcount++;
 				printf("Duplicate\n");
 				
-				if(dupACKcount == 3){
+				if(dupACKcount > 3){
 					printf("ENTER FAST RETRANSMIT\n");
 					close(fd);
+					close(s);
 					return 0;
 				}
+				
 			} else {
 				printf("Correct\n");
 			}
 			
 			previous_seqnum = received_seqnum;
-			dupACKcount = 0;
 			index = index - MSS;
 			
 			/* Slow start or congestion avoidance. */

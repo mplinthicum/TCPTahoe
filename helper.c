@@ -32,21 +32,6 @@ int AddCongestion(double p){
 	return c;
 }
 
-/* 
- * Creates a random string of length 5 and sets it to 
- * bytes 1 - 6 (0 indexed) in the packet character array.
- * The first 2 bytes hold the sequence number.
- */
-void random_string(char* dest){
-	char char_set[] = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	int i = 0, index = 0;
-	
-	for(i = 2; i < 7; i++){
-		index = rand() % 61;
-		dest[i] = char_set[index];
-	}
-}
-
 /*
  * Copies the packet contents from a saved packet to a buffer.
  * Also updates the send_time.
